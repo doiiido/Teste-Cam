@@ -1,4 +1,4 @@
 from flask import Flask
 
 app = Flask(__name__)
-app.secret_key = "hu3"
+app.secret_key = "Teste-CAM"

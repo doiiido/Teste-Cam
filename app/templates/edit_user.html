@@ -1,0 +1,25 @@
+<doctype html>
+    <title>Lista Telefônica</title>
+    <p><a href="{{ url_for('.delete_user') }}"> Caso deseje apagar todos os seus dados, clique aqui </a></p>
+    <h2>Editar Perfil</h2>
+    <form method="post" action="/edit_user">
+    <dl>
+    <p>
+    <input name="Name" value="{{ row['name'] }}"
+                     type="text" placeholder="Nome" autocomplete="off" required>
+    </p>
+    <p>
+    <input name="Username" value="{{ row['username'] }}" 
+                     type="text" placeholder="Nome de usuário" autocomplete="off" required>
+    </p>
+    <p>
+    <input name="Password" value="" 
+                  type="password" placeholder="Senha" autocomplete="off" required>
+    </p>
+    </dl>
+    <p>
+    <input type="submit" value="Salvar">
+    </p>
+    </form>
+
+    <p><a href="{{ url_for('.phonebook') }}"> Voltar </a></p>
