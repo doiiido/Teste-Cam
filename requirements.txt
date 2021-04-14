@@ -1,0 +1,8 @@
+flask
+configparser
+python-dotenv
+flask_table
+mysql
+mysqlclient
+PyMySQL
+flask-mysql
