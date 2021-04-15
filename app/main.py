@@ -178,11 +178,12 @@ def add_phone():
             name = request.form['Name']
             phone = request.form['Phone']
             email = request.form['Email']
-            #file = request.files['File']
+            uploaded_file = request.files['image_file']
             # validate the received values
             if name and email and phone:
                 # save edits
-                #f.save(secure_filename(f.filename))
+                if uploaded_file.filename != '':
+                    uploaded_file.save(uploaded_file.filename)
                 id = session['id']
                 conn = mysql.connect()
                 cursor = conn.cursor(pymysql.cursors.DictCursor)
