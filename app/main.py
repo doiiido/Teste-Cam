@@ -3,10 +3,12 @@ from app import app
 from tables import Results
 from db_config import mysql
 from flask import session, flash, render_template, request, redirect
+from werkzeug.utils import secure_filename
 
 @app.route('/', methods=['GET','POST'])
 def landing():
     if request.method == 'GET':
+        #check if it´s already connected
         if 'username' in session:
             return redirect('/phonebook')
         return render_template('index.html')
@@ -14,14 +16,13 @@ def landing():
         conn = None
         cursor = None
         try: 
-            _username = request.form['Username']
-            _password = request.form['Password']
+            username = request.form['Username']
+            password = request.form['Password']
             # validate the received values
-            if _username and _password:
-                #do not save password as a plain text
+            if username and password:
                 conn = mysql.connect()
                 cursor = conn.cursor(pymysql.cursors.DictCursor)
-                cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (_username, _password))
+                cursor.execute("SELECT * FROM users WHERE username = %s AND password = %s", (username, password))
                 logged = cursor.fetchone()
                 if logged:
                     session['loggedin'] = True
@@ -42,26 +43,21 @@ def landing():
             conn.close()
 
 
-@app.route('/singup', methods=['GET', 'POST'])
+@app.route('/singup', methods=['POST'])
 def singup():
-    if request.method == 'GET':
-        return render_template('singup.html')
     if request.method == 'POST':
         conn = None
         cursor = None
         try: 
-            _name = request.form['Name']
-            _email = request.form['Username']
-            _password = request.form['Password']
+            name = request.form['Name']
+            email = request.form['Username']
+            password = request.form['Password']
             # validate the received values
-            if _name and _email and _password:
-                #do not save password as a plain text
-                # save edits
-                sql = "INSERT INTO users(name, username, password) VALUES(%s, %s, %s)"
-                data = (_name, _email, _password,)
+            if name and email and password:
+                # save
                 conn = mysql.connect()
-                cursor = conn.cursor()
-                cursor.execute(sql, data)
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                cursor.execute("INSERT INTO users(name, username, password) VALUES(%s, %s, %s)", (name, email, password))
                 conn.commit()
                 flash('Registrado com sucesso!')
                 return redirect('/')
@@ -79,9 +75,10 @@ def edit_user():
         conn = None
         cursor = None
         try:
+            id = session['id']
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            id = session['id']
+            # getting the data regarding the user
             cursor.execute("SELECT * FROM users WHERE id=%s", id)
             row = cursor.fetchone()
             if row:
@@ -97,18 +94,15 @@ def edit_user():
         conn = None
         cursor = None
         try: 
-            _name = request.form['Name']
-            _username = request.form['Username']
-            _password = request.form['Password']
-            _id = session['id']
-            if _name and _username and _password and _id:
-                #do not save password as a plain text
-                # save edits
-                sql = "UPDATE users SET name=%s, username=%s, password=%s WHERE id=%s"
-                data = (_name, _username, _password, _id)
+            name = request.form['Name']
+            username = request.form['Username']
+            password = request.form['Password']
+            id = session['id']
+            if name and username and password and id:
+                # save edits                
                 conn = mysql.connect()
-                cursor = conn.cursor()
-                cursor.execute(sql, data)
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                cursor.execute("UPDATE users SET name=%s, username=%s, password=%s WHERE id=%s", (name, username, password, id))
                 conn.commit()
                 flash('Atualizado com sucesso!')
                 return redirect('/logout')
@@ -125,9 +119,10 @@ def delete_user():
     conn = None
     cursor = None
     try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
         id = session['id']
+        conn = mysql.connect()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        # Delete user and it phonebook entries
         cursor.execute("DELETE FROM users WHERE id=%s", id)
         conn.commit()
         flash('Dados deletados com sucesso!')
@@ -148,13 +143,16 @@ def logout():
 
 @app.route('/phonebook')
 def phonebook():
+    #check if it´s already connected
     if 'username' in session:
         conn = None
         cursor = None
         try:
+            id = session['id']
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            cursor.execute("SELECT * FROM phonebook WHERE user_id=%s", session['id'])
+            #getting all entries from the user
+            cursor.execute("SELECT * FROM phonebook WHERE user_id=%s", id)
             rows = cursor.fetchall()
             table = Results(rows)
             table.border = True
@@ -175,18 +173,18 @@ def add_phone():
         conn = None
         cursor = None
         try: 
-            _name = request.form['Name']
-            _phone = request.form['Phone']
-            _email = request.form['Email']
+            name = request.form['Name']
+            phone = request.form['Phone']
+            email = request.form['Email']
+            #file = request.files['File']
             # validate the received values
-            if _name and _email and _phone:
-                #do not save password as a plain text
+            if name and email and phone:
                 # save edits
-                sql = "INSERT INTO phonebook(user_id, name, phone, mail) VALUES(%s, %s, %s, %s)"
-                data = (session['id'], _name, _phone, _email)
+                #f.save(secure_filename(f.filename))
+                id = session['id']
                 conn = mysql.connect()
-                cursor = conn.cursor()
-                cursor.execute(sql, data)
+                cursor = conn.cursor(pymysql.cursors.DictCursor)
+                cursor.execute("INSERT INTO phonebook(user_id, name, phone, mail) VALUES(%s, %s, %s, %s)", (id, name, phone, email))
                 conn.commit()
                 return redirect('/phonebook')
             else:
@@ -221,19 +219,19 @@ def update_phone():
     conn = None
     cursor = None
     try: 
-        _name = request.form['Name']
+        name = request.form['Name']
         phone = request.form['Phone']
-        _email = request.form['Email']
-        _id = request.form['id']
+        email = request.form['Email']
+        id = request.form['id']
+        #file = request.files['File']
         user_id = session['id']
         # validate the received values
-        if _name and _email and phone and _id and request.method == 'POST':
+        if name and email and phone and id and request.method == 'POST':
             # save edits
-            sql = "UPDATE phonebook SET name=%s, phone=%s, mail=%s WHERE id=%s AND user_id=%s "
-            data = (_name, phone, _email, _id, user_id)
+            #f.save(secure_filename(f.filename))
             conn = mysql.connect()
-            cursor = conn.cursor()
-            cursor.execute(sql, data)
+            cursor = conn.cursor(pymysql.cursors.DictCursor)
+            cursor.execute("UPDATE phonebook SET name=%s, phone=%s, mail=%s WHERE id=%s AND user_id=%s ", (name, phone, email, id, user_id))
             conn.commit()
             return redirect('/phonebook')
         else:
@@ -252,6 +250,7 @@ def delete_phone(id):
         conn = mysql.connect()
         cursor = conn.cursor()
         user_id = session['id']
+        # can only delete phones from your phonebook
         cursor.execute("DELETE FROM phonebook WHERE id=%s AND user_id=%s", (id, user_id))
         conn.commit()
         return redirect('/phonebook')

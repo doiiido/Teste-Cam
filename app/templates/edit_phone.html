@@ -3,6 +3,7 @@
     <h2>Editar Contato</h2>
     <form method="post" action="/update_phone">
     <dl>
+	<input type="file" name="File" placeholder="Selecione uma foto (3 MB)" autocomplete="off"/>
     <p>
     <input name="Name" value="{{ row['name'] }}"
                      type="text" placeholder="Nome" autocomplete="off" required>
