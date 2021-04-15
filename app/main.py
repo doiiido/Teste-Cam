@@ -43,8 +43,10 @@ def landing():
             conn.close()
 
 
-@app.route('/singup', methods=['POST'])
+@app.route('/singup', methods=['GET', 'POST'])
 def singup():
+    if request.method == 'GET':
+        return render_template('singup.html')
     if request.method == 'POST':
         conn = None
         cursor = None

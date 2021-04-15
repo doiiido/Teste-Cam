@@ -1,80 +1,34 @@
-<doctype html></doctype>
-    <head>
-        <title>Flask app</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    </head>
-    <div class="container" >
-        <p>
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <ul class=flashes>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-            {% endif %}
-            {% endwith %}
-            </p>
+<doctype html>
+    <title>Lista Telefônica</title>
+     
+    <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    </p>
 
-        <a class="links" id="paralogin"></a>
-        <a class="links" id="paracadastro"></a>
+    <h2>Faça login para continuar</h2>
+    <form method="post" action="/">
+    <dl>
+    <p>
+    <input name="Username" value="" type="text" 
+                placeholder="Nome de usuário" autocomplete="off" required>
+    </p>
+    <p>
+    <input name="Password" value="" type="password"
+                placeholder="Senha" autocomplete="off" required>
+    </p>
+    </dl>
+    <p>
+    <input type="submit" value="Entrar">
+    </p>
+    </form>
 
-        <div class="content">      
-            <!--FORMULÁRIO DE LOGIN-->
-            <div id="login">
-                <form method="post" action="/"> 
-                <h1>Login</h1> 
-                <p> 
-                    <label for="Username">Nome de usuário</label>
-                    <input id="Username" name="Username" required="required" type="text" placeholder="abc"/>
-                </p>
-
-                <p> 
-                    <label for="Password">Sua senha</label>
-                    <input id="Password" name="Password" required="required" type="password" placeholder="1234" /> 
-                </p>
-
-                <p> 
-                    <input type="submit" value="Entrar" /> 
-                </p>
-
-                <p class="link">
-                    Ainda não tem conta?
-                    <a href="#paracadastro">Cadastre-se</a>
-                </p>
-                </form>
-            </div>
-
-            <!--FORMULÁRIO DE CADASTRO-->
-            <div id="cadastro">
-                <form method="post" action="/singup"> 
-                <h1>Cadastro</h1> 
-
-                <p> 
-                    <label for="Name">Seu nome</label>
-                    <input id="Name" name="Name" required="required" type="text" placeholder="joão" />
-                </p>
-
-                <p> 
-                    <label for="Username">Nome de usuário</label>
-                    <input id="Username" name="Username" required="required" type="text" placeholder="abc"/> 
-                </p>
-
-                <p> 
-                    <label for="Password">Sua senha</label>
-                    <input id="Password" name="Password" required="required" type="password" placeholder="1234"/>
-                </p>
-
-                <p> 
-                    <input type="submit" value="Cadastrar"/> 
-                </p>
-
-                <p class="link">  
-                    Já tem conta?
-                    <a href="#paralogin"> Ir para Login </a>
-                </p>
-                </form>
-            </div>
-        </div>
-    </div> 
+    <p><a href="{{ url_for('.singup') }}"> Registre-se aqui </a></p>
    
