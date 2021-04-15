@@ -1,6 +1,7 @@
 # Teste-Cam
 
-Desafio
+Desafio:
+
 Desenvolver uma solução web de lista telefônica.
 Tal solução precisa oferecer uma interface web simples que permita o CRUD das
 informações da lista.
@@ -24,3 +25,5 @@ criatividade pode ser exercitada. A inclusão de outras funcionalidades é encor
 - Google, StackOverflow são seus amigos. Contudo, essa é uma atividade individual.
 Qualquer evidência de plágio ou cópia de artefatos online será motivo de exclusão
 do processo seletivo.
+
+Uma cópia do projeto pode ser acessada em teste-cam.lincoln.abreu.eng.br
